@@ -24,13 +24,11 @@ https://pypi.org/project/pyemvue/0.9.5/
 ```
 
 ## .env
-The following environment variables need to be defined, these can be in an .env file.  The delay is the number of 
-minutes between collecting the metrics. 
+The following environment variables need to be defined, these can be in an .env file.  
 
 ```bash
 USERNAME='<<Emporia username>>'
 PASSWORD='<<Emporia password>>'
-DELAY=60
 CLIENT_ID='<Emporia Client Id>
 ```
 
@@ -39,7 +37,7 @@ CLIENT_ID='<Emporia Client Id>
 There is no specific retry logic at this time. If there are errors with one session, this should be logged and it will
 retry the same pull for a full 24 hours. 
 
-## Traces, Logs and Metrics
+## Traces, Logs, and Metrics
 
 Logs are exposed as OpenTelemetry.  When running locally, the collector will capture Traces to Tempo, Logs to Splunk, 
 and metrics to Prometheus. 
