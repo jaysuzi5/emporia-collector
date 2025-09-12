@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 from emporia.cognito_auth import CognitoAuth
 from emporia.enums import Scale, Unit
 
-CLIENT_ID = 'TBD'
+
 USER_POOL_ID = 'us-east-2_ghlOXVLi1'
 REGION = 'us-east-2'
 API_ROOT = 'https://api.emporiaenergy.com'
@@ -13,7 +13,7 @@ API_DEVICES_USAGE = "AppAPI?apiMethod=getDeviceListUsages&deviceGids={deviceGids
 API_CHART_USAGE = "AppAPI?apiMethod=getChartUsage&deviceGid={deviceGid}&channel={channel}&start={start}&end={end}&scale={scale}&energyUnit={unit}"
 
 class Emporia(object):
-    def __init__(self, username, password):
+    def __init__(self, username, password, client_id):
         self._username = username
         self._password = password
         self._pool_wellknown_jwks = None
@@ -26,7 +26,7 @@ class Emporia(object):
         self._read_timeout = 10.03
         self._channels = {}
         self._gids = {}
-        self._cognito = CognitoAuth(CLIENT_ID, USER_POOL_ID, REGION)
+        self._cognito = CognitoAuth(client_id, USER_POOL_ID, REGION)
         self._cognito.login(username, password)
 
     def get_devices(self):

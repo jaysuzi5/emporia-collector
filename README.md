@@ -41,3 +41,13 @@ retry the same pull for a full 24 hours.
 
 Logs are exposed as OpenTelemetry.  When running locally, the collector will capture Traces to Tempo, Logs to Splunk, 
 and metrics to Prometheus. 
+
+## Docker File
+
+```bash
+docker login
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t jaysuzi5/emporia-collector:latest \
+  --push .
+```
