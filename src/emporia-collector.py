@@ -9,9 +9,9 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-API_URL = "http://home.dev.com/api/v1/emporia/"
-API_SEARCH_URL = "http://home.dev.com/api/v1/emporia/search"
-API_DELETE_URL = "http://home.dev.com/api/v1/emporia/{id}"
+API_URL = "http://emporia.dev.svc.cluster.local:5001/api/v1/emporia/"
+API_SEARCH_URL = "http://emporia.dev.svc.cluster.local:5001/api/v1/emporia/search"
+API_DELETE_URL = "http://emporia.dev.svc.cluster.local:5001/api/v1/emporia/{id}"
 
 def _get_emporia_data(emporia, days_back):
     return emporia.get_usage(days_back=days_back)
