@@ -156,6 +156,7 @@ def _load_emporia_data(usages):
 
 
 def _load_day(emporia, days_back=0) -> tuple:
+    json_logger.message(f"staring _load_day with days_back: {days_back}", debug=True)
     instant = datetime.now(timezone.utc) - timedelta(days=days_back)
     total_records = 0
     total_errors = 0
