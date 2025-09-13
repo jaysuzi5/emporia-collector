@@ -1,23 +1,26 @@
 from datetime import datetime, timezone
 import inspect
 import logging
+import os
 import uuid
+from dotenv import load_dotenv
 
 
 class JsonLogger:
     def __init__(self):
+        load_dotenv()
         self._config = None
         self._transaction_id = None
         self._logger = None
         self._request = {}
+        self._log_level_str = os.getenv("LOG_LEVEL", "INFO").upper()
 
     def define(self, config: dict) -> None:
         validate_configuration(config)
         self._config = config
-        self._transaction_id = uuid.uuid4()
+        self._transaction_id = str(uuid.uuid4())
         self._logger = logging.getLogger(self._config['logging_info']['component'])
-        log_level_str = self._config['logging_info']['level'].upper()
-        log_level = getattr(logging, log_level_str, logging.INFO)
+        log_level = getattr(logging, self._log_level_str, logging.INFO)
         logging.basicConfig(level=log_level)
 
     def request(self, payload: dict = None) -> None:
@@ -62,7 +65,7 @@ class JsonLogger:
             "source_component": source_component,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "transaction_id": self._transaction_id,
-            "source_transaction_id": uuid.uuid4()
+            "source_transaction_id": str(uuid.uuid4())
         }
         if payload:
             log_message["payload"] = payload
@@ -125,10 +128,13 @@ class JsonLogger:
 
         # Do the actual logging
         if exception or error:
+            log_message["level"] = "ERROR"
             self._logger.error(log_message)
         elif debug:
+            log_message["level"] = "DEBUG"
             self._logger.debug(log_message)
         else:
+            log_message["level"] = "INFO"
             self._logger.info(log_message)
 
 
