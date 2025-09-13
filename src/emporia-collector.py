@@ -201,7 +201,7 @@ def main():
     payload['details'] = []
     payload["details"].append(
         {
-            'instant': instant,
+            'instant': instant.isoformat(timespec="milliseconds").replace("+00:00", "Z"),
             'records': records,
             'deleted': deleted,
             'errors': errors
@@ -216,7 +216,7 @@ def main():
     total_errors += errors
     payload["details"].append(
         {
-            'instant': instant,
+            'instant': instant.isoformat(timespec="milliseconds").replace("+00:00", "Z"),
             'records': records,
             'deleted': deleted,
             'errors': errors
