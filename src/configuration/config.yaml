@@ -1,0 +1,4 @@
+logging_info:
+  level: INFO
+  component: "emporia-collector"
+  component_type: "python"
