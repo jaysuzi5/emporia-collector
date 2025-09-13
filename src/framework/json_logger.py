@@ -98,6 +98,7 @@ class JsonLogger:
                 source_request: dict = None, error: bool = False, debug: bool = False) -> None:
         log_message = {
             "message": message,
+            "event": "Message",
             "component": self._config['logging_info']['component'],
             "component_type": self._config['logging_info']['component_type'],
             "timestamp": datetime.now(timezone.utc).isoformat(),
