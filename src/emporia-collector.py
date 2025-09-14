@@ -5,8 +5,8 @@ import traceback
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 from emporia.emporia import Emporia
-from framework.jLogger import LoggingInfo, Logger, EventType
-from framework.jConfig import Config
+from jTookkit.jLogging import LoggingInfo, Logger, EventType
+from jTookkit.jConfig import Config
 
 
 class EmporiaCollector:
@@ -196,7 +196,7 @@ class EmporiaCollector:
         errors = 0
         payload["total_records"] = total_records
         source_transaction = self._logger.transaction_event(EventType.SPAN_START, payload=payload,
-                                                            source_component="emporia: Local InsertR",
+                                                            source_component="emporia: Local Insert",
                                                             transaction=self._transaction)
 
         for usage in usages:

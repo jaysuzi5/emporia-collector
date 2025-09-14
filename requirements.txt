@@ -7,6 +7,7 @@ googleapis-common-protos==1.70.0
 grpcio==1.74.0
 idna==3.10
 importlib_metadata==8.7.0
+j-utilities-toolkit==0.0.1
 jmespath==1.0.1
 opentelemetry-api==1.37.0
 opentelemetry-distro==0.58b0
