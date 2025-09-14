@@ -116,7 +116,7 @@ def _load_emporia_data(usages):
     inserted = 0
     errors = 0
     payload["total_records"] = total_records
-    source_request = json_logger.source_request(source_component="Emporia", payload=payload)
+    source_request = json_logger.source_request(source_component="emporia: Local Insert", payload=payload)
     for usage in usages:
         # Convert 'instant' datetime to ISO 8601 string with UTC 'Z'
         instant_iso = usage['instant'].astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
