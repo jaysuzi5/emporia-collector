@@ -12,7 +12,6 @@ from jTookkit.jConfig import Config
 class EmporiaCollector:
 
     def __init__(self, config):
-        load_dotenv()
         self._config = config
         logging_info = LoggingInfo(**self._config.get("logging_info", {}))
         self._logger = Logger(logging_info)
@@ -241,6 +240,7 @@ class EmporiaCollector:
 
 
 def main():
+    load_dotenv()
     config = Config()
     collector = EmporiaCollector(config)
     collector.process()
