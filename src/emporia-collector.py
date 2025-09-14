@@ -91,7 +91,7 @@ class EmporiaCollector:
         usages = []
         return_code = 200
         payload = {"days_back": days_back}
-        source_transaction = self._logger.transaction_event(EventType.SUB_TRANSACTION_START, payload=payload,
+        source_transaction = self._logger.transaction_event(EventType.SPAN_START, payload=payload,
                                                         source_component="Emporia", transaction=self._transaction)
         try:
             usages = emporia.get_usage(days_back=days_back)
@@ -107,7 +107,7 @@ class EmporiaCollector:
             }
             self._logger.message(message=message, exception=ex, stack_trace=stack_trace, data=data,
                                  transaction=source_transaction)
-        self._logger.transaction_event(EventType.SUB_TRANSACTION_END, transaction=source_transaction,
+        self._logger.transaction_event(EventType.SPAN_END, transaction=source_transaction,
                                        payload=payload, return_code=return_code)
         return return_code, usages
 
@@ -117,7 +117,7 @@ class EmporiaCollector:
         results = None
         date_string = instant.isoformat(timespec="milliseconds").replace("+00:00", "Z")
         payload["start_date"] = date_string
-        source_transaction = self._logger.transaction_event(EventType.SUB_TRANSACTION_START, payload=payload,
+        source_transaction = self._logger.transaction_event(EventType.SPAN_START, payload=payload,
                                                             source_component="emporia: Local Search",
                                                             transaction=self._transaction)
         try:
@@ -145,7 +145,7 @@ class EmporiaCollector:
             }
             self._logger.message(message=message, exception=ex, stack_trace=stack_trace, data=data,
                                  transaction=source_transaction)
-        self._logger.transaction_event(EventType.SUB_TRANSACTION_END, transaction=source_transaction,
+        self._logger.transaction_event(EventType.SPAN_END, transaction=source_transaction,
                                        payload=payload, return_code=return_code)
         return return_code, results
 
@@ -156,7 +156,7 @@ class EmporiaCollector:
         deleted = 0
         errors = 0
         payload["total_records"] = total_records
-        source_transaction = self._logger.transaction_event(EventType.SUB_TRANSACTION_START, payload=payload,
+        source_transaction = self._logger.transaction_event(EventType.SPAN_START, payload=payload,
                                                             source_component="emporia: Local Delete",
                                                             transaction=self._transaction)
 
@@ -183,7 +183,7 @@ class EmporiaCollector:
                                      transaction=source_transaction)
         payload['deleted'] = deleted
         payload['errors'] = errors
-        self._logger.transaction_event(EventType.SUB_TRANSACTION_END, transaction=source_transaction,
+        self._logger.transaction_event(EventType.SPAN_END, transaction=source_transaction,
                                        payload=payload, return_code=return_code)
 
         return return_code, deleted, errors
@@ -195,8 +195,8 @@ class EmporiaCollector:
         inserted = 0
         errors = 0
         payload["total_records"] = total_records
-        source_transaction = self._logger.transaction_event(EventType.SUB_TRANSACTION_START, payload=payload,
-                                                            source_component="emporia: Local Insert",
+        source_transaction = self._logger.transaction_event(EventType.SPAN_START, payload=payload,
+                                                            source_component="emporia: Local InsertR",
                                                             transaction=self._transaction)
 
         for usage in usages:
@@ -235,7 +235,7 @@ class EmporiaCollector:
 
         payload['inserted'] = inserted
         payload['errors'] = errors
-        self._logger.transaction_event(EventType.SUB_TRANSACTION_END, transaction=source_transaction,
+        self._logger.transaction_event(EventType.SPAN_END, transaction=source_transaction,
                                        payload=payload, return_code=return_code)
         return return_code, inserted, errors
 

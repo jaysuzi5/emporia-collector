@@ -10,10 +10,10 @@ from typing import Optional
 
 
 class EventType(Enum):
-    TRANSACTION_START = "transactionStart"
-    TRANSACTION_END = "transactionEnd"
-    SUB_TRANSACTION_START = "subTransactionStart"
-    SUB_TRANSACTION_END = "subTransactionEnd"
+    TRANSACTION_START = "transaction_start"
+    TRANSACTION_END = "transaction_end"
+    SPAN_START = "span_start"
+    SPAN_END = "span_end"
 
 @dataclass
 class LoggingInfo:
@@ -45,7 +45,7 @@ class Logger:
 
         # --- Sub-Transaction Start ---
         sub_txn_start = logger.transaction_event(
-            event_type=EventType.SUB_TRANSACTION_START,
+            event_type=EventType.SPAN_START,
             transaction=txn_start,
             source_component="payment-processor",
             payload={"step": "authorize_card"}
@@ -60,7 +60,7 @@ class Logger:
 
         # --- Sub-Transaction End ---
         logger.transaction_event(
-            event_type=EventType.SUB_TRANSACTION_END,
+            event_type=EventType.SPAN_END,
             transaction=sub_txn_start,
             return_code=200
         )
@@ -102,7 +102,7 @@ class Logger:
             payload (dict, optional): Custom payload for this event.
             transaction (dict, optional): Transaction/sub-transaction dictionary returned from
                                           a prior START event (required for END events).
-            source_component (str, optional): Component name for sub-transactions (required for SUB_TRANSACTION_START).
+            source_component (str, optional): Component name for sub-transactions (required for SPAN_START).
             return_code (int, optional): Return code, typically 200 for success, 500 for failure
 
         Returns:
@@ -113,7 +113,7 @@ class Logger:
         """
         log_message = {}
         data = validate_transaction_event(event_type, transaction, source_component, return_code)
-        log_message["level"] = self._log_level_str
+        log_message["level"] = "INFO"
         log_message["event_type"] = event_type.value
         log_message["timestamp"] = data["timestamp"]
         log_message["transaction_id"] = data["transaction_id"]
@@ -216,31 +216,31 @@ def validate_transaction_event(event_type: EventType,
         if not return_code:
             raise ValueError("return_code MUST be passed for a TRANSACTION_END")
         data['transaction_id'] = transaction['transaction_id']
-    elif event_type == EventType.SUB_TRANSACTION_START:
+    elif event_type == EventType.SPAN_START:
         if not transaction:
-            raise ValueError("transaction MUST be passed in for a SUB_TRANSACTION_START")
+            raise ValueError("transaction MUST be passed in for a SPAN_START")
         if not source_component:
-            raise ValueError("source_component MUST be passed in for a SUB_TRANSACTION_START")
+            raise ValueError("source_component MUST be passed in for a SPAN_START")
         if 'transaction_id' not in transaction:
-            raise ValueError("transaction_id MUST be in transaction for a SUB_TRANSACTION_START")
+            raise ValueError("transaction_id MUST be in transaction for a SPAN_START")
         data["source_component"] = source_component
         data['transaction_id'] = transaction['transaction_id']
         data['source_transaction_id'] = str(uuid.uuid4())
-    elif event_type == EventType.SUB_TRANSACTION_END:
+    elif event_type == EventType.SPAN_END:
         if not transaction:
-            raise ValueError("transaction MUST be passed in for a SUB_TRANSACTION_END")
+            raise ValueError("transaction MUST be passed in for a SPAN_END")
         if 'transaction_id' not in transaction:
-            raise ValueError("transaction_id MUST be in transaction for a SUB_TRANSACTION_END")
+            raise ValueError("transaction_id MUST be in transaction for a SPAN_END")
         if 'source_component' not in transaction:
-            raise ValueError("source_component MUST be in transaction for a SUB_TRANSACTION_END")
+            raise ValueError("source_component MUST be in transaction for a SPAN_END")
         if 'timestamp' not in transaction:
-            raise ValueError("timestamp MUST be in transaction for a SUB_TRANSACTION_END")
+            raise ValueError("timestamp MUST be in transaction for a SPAN_END")
         if not return_code:
-            raise ValueError("return_code MUST be passed for a SUB_TRANSACTION_END")
+            raise ValueError("return_code MUST be passed for a SPAN_END")
         data["source_component"] = transaction['source_component']
         data['transaction_id'] = transaction['transaction_id']
         data['source_transaction_id'] = transaction['source_transaction_id']
-    if event_type == EventType.TRANSACTION_END or event_type == EventType.SUB_TRANSACTION_END:
+    if event_type == EventType.TRANSACTION_END or event_type == EventType.SPAN_END:
         transaction_start = transaction["timestamp"]
         time_difference = datetime.fromisoformat(timestamp) - datetime.fromisoformat(transaction_start)
         data['duration'] = time_difference.total_seconds()
