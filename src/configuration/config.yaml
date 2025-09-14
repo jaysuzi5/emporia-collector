@@ -1,18 +1,3 @@
 logging_info:
   component: "emporia-collector"
   component_type: "python"
-
-servers:
-  - worker1
-  - worker2
-  - worker3
-
-
-people:
-  - john:
-      first_name: "John"
-      last_name: "John"
-  - jane:
-      first_name: "Jane"
-      last_name: "John"
-
