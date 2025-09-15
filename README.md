@@ -20,6 +20,8 @@ https://pypi.org/project/pyemvue/0.9.5/
 ├── requirements.txt
 ├── src/
 │   └── emporia-collector.py
+│   └──configuration/
+│      └── configuration.yaml
 └── .env
 ```
 
