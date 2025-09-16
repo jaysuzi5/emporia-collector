@@ -18,52 +18,44 @@ class EmporiaCollector:
         self._transaction = None
 
     def process(self):
-        payload= {}
-        response_return_code = 200
-        total_records = 0
-        total_deleted = 0
-        total_errors = 0
+        payload = {
+            "return_code": 200,
+            "records": 0,
+            "deleted": 0,
+            "errors": 0,
+            "details": []
+        }
 
         self._transaction = self._logger.transaction_event(EventType.TRANSACTION_START)
         # Create the Emporia object that will be used to call the external Emporia APIs
         emporia = Emporia(os.getenv("USERNAME"), os.getenv("PASSWORD"), os.getenv("CLIENT_ID"))
 
         # Call for yesterday's data and load it to Postgres
-        return_code, instant, records, deleted, errors = self._load_day(emporia, days_back=1)
-        if return_code > response_return_code:
-            response_return_code = return_code
-        total_records += records
-        total_deleted += deleted
-        total_errors += errors
+        self._call_and_update_day(emporia, payload, days_back=1)
+        # Call for today's data and load it to Postgres
+        self._call_and_update_day(emporia, payload, days_back=0)
+
+        return_code = payload['return_code']
+        payload.pop('return_code')
+        self._logger.transaction_event(EventType.TRANSACTION_END, transaction=self._transaction,
+                                       payload=payload, return_code=return_code)
+
+    def _call_and_update_day(self, emporia: Emporia, payload: dict, days_back: int) -> None:
+        return_code, instant, records, deleted, errors = self._load_day(emporia, days_back=days_back)
+        if return_code > payload['return_code']:
+            payload['return_code'] = return_code
+        payload['records'] += records
+        payload['deleted'] += deleted
+        payload['errors'] += errors
         payload['details'] = []
         payload["details"].append(
             {
+                'days_back': days_back,
                 'instant': instant.isoformat(timespec="milliseconds").replace("+00:00", "Z"),
                 'records': records,
                 'deleted': deleted,
                 'errors': errors
             })
-
-        # Call for today's data and load it to Postgres
-        return_code, instant, total_records, deleted, errors = self._load_day(emporia, days_back=0)
-        if return_code > response_return_code:
-            response_return_code = return_code
-        total_records += records
-        total_deleted += deleted
-        total_errors += errors
-        payload["details"].append(
-            {
-                'instant': instant.isoformat(timespec="milliseconds").replace("+00:00", "Z"),
-                'records': records,
-                'deleted': deleted,
-                'errors': errors
-            })
-
-        payload['total_records'] = total_records
-        payload['total_deleted'] = total_deleted
-        payload['total_errors'] = total_errors
-        self._logger.transaction_event(EventType.TRANSACTION_END, transaction=self._transaction,
-                                       payload=payload, return_code=response_return_code)
 
     def _load_day(self, emporia, days_back=0) -> tuple:
         self._logger.message(self._transaction, message=f"staring _load_day with days_back: {days_back}", debug=True)
