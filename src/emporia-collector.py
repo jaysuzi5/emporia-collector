@@ -219,7 +219,7 @@ class EmporiaCollector:
                 return_code = 500
                 errors = total_records - inserted
                 stack_trace = traceback.format_exc()
-                message = "Exception deleting local data"
+                message = "Exception loading local data"
                 self._logger.message(message=message, exception=ex, stack_trace=stack_trace,
                                      transaction=source_transaction)
 
